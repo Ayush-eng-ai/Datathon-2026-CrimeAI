@@ -1,7 +1,9 @@
+import { Routes, Route, Navigate } from "react-router-dom"
 import Sidebar from "./components/layout/Sidebar"
-import Header from "./components/layout/Header"
-import ChatWindow from "./components/chat/ChatWindow"
-import ChatInput from "./components/chat/ChatInput"
+import Dashboard from "./pages/Dashboard/Dashboard"
+import Chatbot from "./pages/Chatbot/Chatbot"
+import Reports from "./pages/Reports/Reports"
+import Settings from "./pages/Settings/Settings"
 
 function App() {
   return (
@@ -10,11 +12,13 @@ function App() {
         <Sidebar />
 
         <main className="flex-1 p-8">
-          <div className="rounded-2xl border border-slate-800 bg-slate-900 p-6">
-            <Header />
-            <ChatWindow />
-            <ChatInput />
-          </div>
+          <Routes>
+            <Route path="/" element={<Navigate to="/chatbot" />} />
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/chatbot" element={<Chatbot />} />
+            <Route path="/reports" element={<Reports />} />
+            <Route path="/settings" element={<Settings />} />
+          </Routes>
         </main>
       </div>
     </div>
