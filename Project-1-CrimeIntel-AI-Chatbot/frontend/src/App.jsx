@@ -4,6 +4,8 @@ import Dashboard from "./pages/Dashboard/Dashboard"
 import Chatbot from "./pages/Chatbot/Chatbot"
 import Reports from "./pages/Reports/Reports"
 import Settings from "./pages/Settings/Settings"
+import CrimeSearch from "./pages/CrimeSearch/CrimeSearch"
+import CaseSummary from "./pages/CaseSummary/CaseSummary"
 
 function App() {
   return (
@@ -16,6 +18,8 @@ function App() {
             <Route path="/" element={<Navigate to="/chatbot" />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/chatbot" element={<Chatbot />} />
+            <Route path="/crime-search" element={<CrimeSearch />} />
+            <Route path="/case-summary" element={<CaseSummary />} />
             <Route path="/reports" element={<Reports />} />
             <Route path="/settings" element={<Settings />} />
           </Routes>
