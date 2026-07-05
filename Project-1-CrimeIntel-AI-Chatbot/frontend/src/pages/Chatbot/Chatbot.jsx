@@ -4,7 +4,7 @@ import ChatInput from "../../components/chat/ChatInput"
 
 function Chatbot() {
   return (
-    <div className="rounded-2xl border border-slate-800 bg-slate-900 p-6">
+    <div className="space-y-5">
       <Header />
       <ChatWindow />
       <ChatInput />
