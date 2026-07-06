@@ -1,3 +1,7 @@
+import PageHeader from "../../components/ui/PageHeader"
+import StatCard from "../../components/ui/StatCard"
+import GlassCard from "../../components/ui/GlassCard"
+
 function Dashboard() {
   const stats = [
     { title: "Total Cases", value: "24,580", change: "+12.5%", icon: "📁" },
@@ -15,41 +19,20 @@ function Dashboard() {
 
   return (
     <div className="space-y-6">
-      <div className="rounded-3xl border border-white/10 bg-white/[0.03] p-6 backdrop-blur-xl">
-        <p className="text-sm font-semibold uppercase tracking-[0.3em] text-cyan-300">
-          CrimeVision Overview
-        </p>
-        <h2 className="mt-2 text-3xl font-black text-white">
-          Crime Intelligence Dashboard
-        </h2>
-        <p className="mt-2 text-slate-400">
-          Monitor crime trends, district risk, repeat offenders, and investigation insights.
-        </p>
-      </div>
+      <PageHeader
+        label="CrimeVision Overview"
+        title="Crime Intelligence Dashboard"
+        description="Monitor crime trends, district risk, repeat offenders, and investigation insights."
+      />
 
       <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
         {stats.map((item) => (
-          <div
-            key={item.title}
-            className="rounded-3xl border border-cyan-400/10 bg-[#050b16]/80 p-6 shadow-[0_0_45px_rgba(14,165,233,0.06)]"
-          >
-            <div className="flex items-center justify-between">
-              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-cyan-400/10 text-2xl">
-                {item.icon}
-              </div>
-              <span className="rounded-full bg-emerald-400/10 px-3 py-1 text-xs font-semibold text-emerald-300">
-                {item.change}
-              </span>
-            </div>
-
-            <p className="mt-5 text-sm text-slate-400">{item.title}</p>
-            <h3 className="mt-2 text-3xl font-black text-white">{item.value}</h3>
-          </div>
+          <StatCard key={item.title} {...item} />
         ))}
       </div>
 
       <div className="grid gap-6 xl:grid-cols-[1.1fr_0.9fr]">
-        <div className="rounded-3xl border border-white/10 bg-white/[0.03] p-6">
+        <GlassCard>
           <h3 className="text-xl font-bold text-white">Crime Trend Preview</h3>
           <p className="mt-2 text-sm text-slate-400">
             Placeholder chart area for yearly and monthly crime analysis.
@@ -66,9 +49,9 @@ function Dashboard() {
               </div>
             ))}
           </div>
-        </div>
+        </GlassCard>
 
-        <div className="rounded-3xl border border-white/10 bg-white/[0.03] p-6">
+        <GlassCard>
           <h3 className="text-xl font-bold text-white">Crime Risk Signals</h3>
 
           <div className="mt-6 space-y-5">
@@ -95,7 +78,7 @@ function Dashboard() {
               Cyber crime cases show a sudden increase compared to the previous period.
             </p>
           </div>
-        </div>
+        </GlassCard>
       </div>
     </div>
   )
