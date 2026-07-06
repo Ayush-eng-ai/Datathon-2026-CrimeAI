@@ -1,62 +1,39 @@
+import PageHeader from "../../components/ui/PageHeader"
+import GlassCard from "../../components/ui/GlassCard"
+import PrimaryButton from "../../components/ui/PrimaryButton"
+
 function CrimeSearch() {
   const records = [
-    {
-      id: "KSP-CR-2024-001",
-      type: "Cyber Crime",
-      district: "Bengaluru",
-      station: "Whitefield PS",
-      status: "Under Investigation",
-      risk: "High",
-    },
-    {
-      id: "KSP-CR-2024-002",
-      type: "Theft",
-      district: "Mysuru",
-      station: "Lakshmipuram PS",
-      status: "Solved",
-      risk: "Medium",
-    },
-    {
-      id: "KSP-CR-2024-003",
-      type: "Robbery",
-      district: "Mangaluru",
-      station: "Central PS",
-      status: "Open",
-      risk: "High",
-    },
+    { id: "KSP-CR-2024-001", type: "Cyber Crime", district: "Bengaluru", station: "Whitefield PS", status: "Under Investigation", risk: "High" },
+    { id: "KSP-CR-2024-002", type: "Theft", district: "Mysuru", station: "Lakshmipuram PS", status: "Solved", risk: "Medium" },
+    { id: "KSP-CR-2024-003", type: "Robbery", district: "Mangaluru", station: "Central PS", status: "Open", risk: "High" },
   ]
 
   return (
     <div className="space-y-6">
-      <div className="rounded-3xl border border-white/10 bg-white/[0.03] p-6 backdrop-blur-xl">
-        <p className="text-sm font-semibold uppercase tracking-[0.3em] text-cyan-300">
-          Crime Database
-        </p>
-        <h2 className="mt-2 text-3xl font-black text-white">Crime Search</h2>
-        <p className="mt-2 text-slate-400">
-          Search crime records using district, crime type, police station, year, status, and keywords.
-        </p>
-      </div>
+      <PageHeader
+        label="Crime Database"
+        title="Crime Search"
+        description="Search crime records using district, crime type, police station, year, status, and keywords."
+      />
 
-      <div className="rounded-3xl border border-cyan-400/10 bg-[#050b16]/80 p-6">
+      <GlassCard className="bg-[#050b16]/80">
         <div className="grid gap-4 md:grid-cols-3">
-          {["District", "Crime Type", "Year", "Case Status", "Police Station", "Search Keyword"].map(
-            (item) => (
-              <input
-                key={item}
-                placeholder={item}
-                className="rounded-2xl border border-white/10 bg-slate-950/80 px-5 py-4 text-white outline-none placeholder:text-slate-500 focus:border-cyan-400/50"
-              />
-            )
-          )}
+          {["District", "Crime Type", "Year", "Case Status", "Police Station", "Search Keyword"].map((item) => (
+            <input
+              key={item}
+              placeholder={item}
+              className="rounded-2xl border border-white/10 bg-slate-950/80 px-5 py-4 text-white outline-none placeholder:text-slate-500 focus:border-cyan-400/50"
+            />
+          ))}
         </div>
 
-        <button className="mt-5 rounded-2xl bg-cyan-400 px-7 py-4 font-bold text-slate-950 hover:bg-cyan-300">
+        <PrimaryButton className="mt-5">
           Search Records
-        </button>
-      </div>
+        </PrimaryButton>
+      </GlassCard>
 
-      <div className="rounded-3xl border border-white/10 bg-white/[0.03] p-6">
+      <GlassCard>
         <h3 className="text-xl font-bold text-white">Recent Crime Records</h3>
 
         <div className="mt-5 overflow-hidden rounded-2xl border border-white/10">
@@ -90,7 +67,7 @@ function CrimeSearch() {
             </tbody>
           </table>
         </div>
-      </div>
+      </GlassCard>
     </div>
   )
 }
