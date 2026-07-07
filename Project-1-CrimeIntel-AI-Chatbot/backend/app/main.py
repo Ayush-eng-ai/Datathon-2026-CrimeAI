@@ -6,6 +6,8 @@ from app.db.database import engine, Base
 from app.models import police_models, ai_models
 from app.routes.case_routes import router as case_router
 from app.routes.search_routes import router as search_router
+from app.routes.chat_routes import router as chat_router
+
 
 Base.metadata.create_all(bind=engine)
 
@@ -27,7 +29,7 @@ app.add_middleware(
 )
 app.include_router(case_router)
 app.include_router(search_router)
-
+app.include_router(chat_router)
 @app.get("/")
 def root():
     return {
