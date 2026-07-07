@@ -5,7 +5,7 @@ from app.core.config import settings
 from app.db.database import engine, Base
 from app.models import police_models, ai_models
 from app.routes.case_routes import router as case_router
-
+from app.routes.search_routes import router as search_router
 
 Base.metadata.create_all(bind=engine)
 
@@ -26,7 +26,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 app.include_router(case_router)
-
+app.include_router(search_router)
 
 @app.get("/")
 def root():
