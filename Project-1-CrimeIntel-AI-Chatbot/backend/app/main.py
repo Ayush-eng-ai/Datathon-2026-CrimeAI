@@ -2,8 +2,12 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.core.config import settings
-from app.db.database import engine
+from app.db.database import engine, Base
+from app.models import police_models, ai_models
+from app.routes.case_routes import router as case_router
 
+
+Base.metadata.create_all(bind=engine)
 
 app = FastAPI(
     title=settings.PROJECT_NAME,
@@ -21,13 +25,14 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+app.include_router(case_router)
 
 
 @app.get("/")
 def root():
     return {
         "message": "CrimeIntel AI Backend is running successfully!",
-        "frontend_allowed": settings.FRONTEND_URL,
+        "database": "Tables created successfully",
     }
 
 
@@ -37,4 +42,5 @@ def health_check():
         "status": "healthy",
         "service": "CrimeIntel AI Backend",
         "version": settings.API_VERSION,
+        "database": "connected",
     }
