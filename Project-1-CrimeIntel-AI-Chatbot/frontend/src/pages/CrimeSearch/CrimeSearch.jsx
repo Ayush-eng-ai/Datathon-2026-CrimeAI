@@ -5,20 +5,35 @@ import PrimaryButton from "../../components/ui/PrimaryButton"
 import { searchCrimes } from "../../services/searchService"
 
 function CrimeSearch() {
-  const [keyword, setKeyword] = useState("")
+  const [filters, setFilters] = useState({
+    crime_no: "",
+    case_no: "",
+    keyword: "",
+    start_date: "",
+    end_date: "",
+  })
+
   const [records, setRecords] = useState([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState("")
 
-  const fetchRecords = async (searchKeyword = "") => {
+  const updateFilter = (key, value) => {
+    setFilters((prev) => ({
+      ...prev,
+      [key]: value,
+    }))
+  }
+
+  const fetchRecords = async () => {
     try {
       setLoading(true)
       setError("")
 
-      const result = await searchCrimes({
-        keyword: searchKeyword || undefined,
-      })
+      const cleanFilters = Object.fromEntries(
+        Object.entries(filters).filter(([, value]) => value.trim() !== "")
+      )
 
+      const result = await searchCrimes(cleanFilters)
       setRecords(result.data || [])
     } catch (err) {
       setError("Backend se crime records load nahi ho pa rahe. FastAPI server check karo.")
@@ -31,10 +46,6 @@ function CrimeSearch() {
     fetchRecords()
   }, [])
 
-  const handleSearch = () => {
-    fetchRecords(keyword)
-  }
-
   return (
     <div className="space-y-6">
       <PageHeader
@@ -46,23 +57,57 @@ function CrimeSearch() {
       <GlassCard className="bg-[#050b16]/80">
         <div className="grid gap-4 md:grid-cols-3">
           <input
-            placeholder="Search Keyword"
-            value={keyword}
-            onChange={(e) => setKeyword(e.target.value)}
+            placeholder="Crime No"
+            value={filters.crime_no}
+            onChange={(e) => updateFilter("crime_no", e.target.value)}
             className="rounded-2xl border border-white/10 bg-slate-950/80 px-5 py-4 text-white outline-none placeholder:text-slate-500 focus:border-cyan-400/50"
           />
 
-          {["District", "Crime Type", "Year", "Case Status", "Police Station"].map((item) => (
-            <input
-              key={item}
-              placeholder={`${item} Coming Soon`}
-              disabled
-              className="rounded-2xl border border-white/10 bg-slate-950/50 px-5 py-4 text-slate-500 outline-none placeholder:text-slate-600"
-            />
-          ))}
+          <input
+            placeholder="Case No"
+            value={filters.case_no}
+            onChange={(e) => updateFilter("case_no", e.target.value)}
+            className="rounded-2xl border border-white/10 bg-slate-950/80 px-5 py-4 text-white outline-none placeholder:text-slate-500 focus:border-cyan-400/50"
+          />
+
+          <input
+            placeholder="Search Keyword"
+            value={filters.keyword}
+            onChange={(e) => updateFilter("keyword", e.target.value)}
+            className="rounded-2xl border border-white/10 bg-slate-950/80 px-5 py-4 text-white outline-none placeholder:text-slate-500 focus:border-cyan-400/50"
+          />
+
+          <input
+            type="date"
+            value={filters.start_date}
+            onChange={(e) => updateFilter("start_date", e.target.value)}
+            className="rounded-2xl border border-white/10 bg-slate-950/80 px-5 py-4 text-white outline-none focus:border-cyan-400/50"
+          />
+
+          <input
+            type="date"
+            value={filters.end_date}
+            onChange={(e) => updateFilter("end_date", e.target.value)}
+            className="rounded-2xl border border-white/10 bg-slate-950/80 px-5 py-4 text-white outline-none focus:border-cyan-400/50"
+          />
+
+          <button
+            onClick={() =>
+              setFilters({
+                crime_no: "",
+                case_no: "",
+                keyword: "",
+                start_date: "",
+                end_date: "",
+              })
+            }
+            className="rounded-2xl border border-white/10 bg-white/5 px-5 py-4 font-semibold text-slate-300 transition hover:bg-white/10"
+          >
+            Clear Filters
+          </button>
         </div>
 
-        <PrimaryButton className="mt-5" onClick={handleSearch}>
+        <PrimaryButton className="mt-5" onClick={fetchRecords} disabled={loading}>
           {loading ? "Searching..." : "Search Records"}
         </PrimaryButton>
 
@@ -97,7 +142,7 @@ function CrimeSearch() {
                   <td className="px-4 py-4">{record.crime_registered_date}</td>
                   <td className="px-4 py-4">{record.police_station_id || "N/A"}</td>
                   <td className="px-4 py-4">{record.case_status_id || "N/A"}</td>
-                  <td className="px-4 py-4 max-w-md text-slate-400">
+                  <td className="max-w-md px-4 py-4 text-slate-400">
                     {record.brief_facts || "No details available"}
                   </td>
                 </tr>
