@@ -1,24 +1,6 @@
 import MessageBubble from "./MessageBubble"
 
-function ChatWindow() {
-  const messages = [
-    {
-      type: "bot",
-      title: "CrimeIntel AI",
-      message: "Hello Officer! 👋 How can I assist you today?",
-    },
-    {
-      type: "user",
-      message: "Show crimes in Bengaluru in 2024.",
-    },
-    {
-      type: "bot",
-      title: "CrimeIntel AI",
-      message:
-        "I can help retrieve crime records, summarize cases, identify hotspots, and generate PDF reports.",
-    },
-  ]
-
+function ChatWindow({ messages, loading }) {
   const prompts = [
     "Show crimes in Bengaluru in 2024",
     "Find cyber crime cases",
@@ -39,12 +21,18 @@ function ChatWindow() {
                 message={item.message}
               />
             ))}
+
+            {loading && (
+              <MessageBubble
+                type="bot"
+                title="CrimeIntel AI"
+                message="Analyzing your query..."
+              />
+            )}
           </div>
 
           <div className="mt-5">
-            <p className="text-sm font-semibold text-cyan-300">
-              Suggested Prompts
-            </p>
+            <p className="text-sm font-semibold text-cyan-300">Suggested Prompts</p>
             <div className="mt-3 grid gap-3 md:grid-cols-2">
               {prompts.map((prompt) => (
                 <button
