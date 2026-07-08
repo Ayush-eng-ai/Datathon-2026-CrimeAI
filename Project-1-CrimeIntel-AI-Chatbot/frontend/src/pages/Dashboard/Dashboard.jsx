@@ -1,14 +1,20 @@
+import { useEffect, useState } from "react"
+
 import PageHeader from "../../components/ui/PageHeader"
 import StatCard from "../../components/ui/StatCard"
 import GlassCard from "../../components/ui/GlassCard"
 
+import { getDashboardStats } from "../../services/dashboardService"
+
 function Dashboard() {
-  const stats = [
-    { title: "Total Cases", value: "24,580", change: "+12.5%", icon: "📁" },
-    { title: "Solved Cases", value: "18,240", change: "+8.2%", icon: "✅" },
-    { title: "High Risk Zones", value: "42", change: "+5", icon: "📍" },
-    { title: "Repeat Offenders", value: "1,284", change: "+3.1%", icon: "⚠️" },
-  ]
+  const [stats, setStats] = useState([
+    { title: "Total Cases", value: 0, change: "Live", icon: "📁" },
+    { title: "Victims", value: 0, change: "Live", icon: "👤" },
+    { title: "Accused", value: 0, change: "Live", icon: "⚖️" },
+    { title: "Reports", value: 0, change: "Live", icon: "📄" },
+  ])
+
+const [loading, setLoading] = useState(true)
 
   const trends = [
     { crime: "Cyber Crime", value: "High", width: "88%" },
@@ -17,8 +23,54 @@ function Dashboard() {
     { crime: "NDPS", value: "Medium", width: "55%" },
   ]
 
+  useEffect(() => {
+    const loadDashboard = async () => {
+      try {
+        const data = await getDashboardStats()
+
+        setStats([
+          {
+            title: "Total Cases",
+            value: data.total_cases,
+            change: "Live",
+            icon: "📁",
+          },
+          {
+            title: "Victims",
+            value: data.total_victims,
+            change: "Live",
+            icon: "👤",
+          },
+          {
+            title: "Accused",
+            value: data.total_accused,
+            change: "Live",
+            icon: "⚖️",
+          },
+          {
+            title: "Reports",
+            value: data.total_reports,
+            change: "Live",
+            icon: "📄",
+          },
+        ])
+      } catch (error) {
+        console.error("Dashboard API Error:", error)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    loadDashboard()
+  }, [])
+
   return (
     <div className="space-y-6">
+      {loading && (
+        <div className="rounded-xl border border-cyan-500/20 bg-cyan-500/10 p-4 text-cyan-300">
+          Loading dashboard analytics...
+        </div>
+      )}
       <PageHeader
         label="CrimeVision Overview"
         title="Crime Intelligence Dashboard"

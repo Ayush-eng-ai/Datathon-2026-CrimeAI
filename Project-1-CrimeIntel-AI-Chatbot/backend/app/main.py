@@ -9,6 +9,7 @@ from app.routes.search_routes import router as search_router
 from app.routes.chat_routes import router as chat_router
 from app.routes.summary_routes import router as summary_router
 from app.routes.report_routes import router as report_router
+from app.routes.dashboard_routes import router as dashboard_router
 
 
 Base.metadata.create_all(bind=engine)
@@ -34,6 +35,8 @@ app.include_router(search_router)
 app.include_router(chat_router)
 app.include_router(summary_router)
 app.include_router(report_router)
+app.include_router(dashboard_router)
+
 
 @app.get("/")
 def root():
