@@ -8,6 +8,7 @@ import { createPDFReport, getReports } from "../../services/reportService"
 
 function Reports() {
   const [reports, setReports] = useState([])
+  const [reportTitle, setReportTitle] = useState("")
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState("")
 
@@ -26,11 +27,17 @@ function Reports() {
   }
 
   const handleGenerateReport = async () => {
+    if (!reportTitle.trim()) {
+      setError("Please enter report title first.")
+      return
+    }
+
     try {
       setLoading(true)
       setError("")
 
-      await createPDFReport("CrimeIntel AI Case Report")
+      await createPDFReport(reportTitle)
+      setReportTitle("")
       await loadReports()
     } catch (err) {
       setError("PDF report placeholder create nahi ho pa raha.")
@@ -52,7 +59,14 @@ function Reports() {
       />
 
       <GlassCard>
-        <div className="flex flex-wrap gap-4">
+        <div className="grid gap-4 md:grid-cols-[1fr_auto_auto]">
+          <input
+            value={reportTitle}
+            onChange={(e) => setReportTitle(e.target.value)}
+            placeholder="Enter report title..."
+            className="rounded-2xl border border-white/10 bg-slate-950/80 px-5 py-4 text-white outline-none placeholder:text-slate-500 focus:border-cyan-400/50"
+          />
+
           <PrimaryButton onClick={handleGenerateReport} disabled={loading}>
             {loading ? "Processing..." : "Generate New Report"}
           </PrimaryButton>
