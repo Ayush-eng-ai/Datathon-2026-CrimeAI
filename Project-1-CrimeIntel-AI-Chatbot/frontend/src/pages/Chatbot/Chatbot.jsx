@@ -54,7 +54,11 @@ function Chatbot() {
   return (
     <div className="space-y-5">
       <Header />
-      <ChatWindow messages={messages} loading={loading} />
+      <ChatWindow
+        messages={messages}
+        loading={loading}
+        onPromptClick={handleSendMessage}
+      />
       <ChatInput onSendMessage={handleSendMessage} loading={loading} />
     </div>
   )

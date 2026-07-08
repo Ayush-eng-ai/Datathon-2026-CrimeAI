@@ -1,6 +1,6 @@
 import MessageBubble from "./MessageBubble"
 
-function ChatWindow({ messages, loading }) {
+function ChatWindow({ messages, loading, onPromptClick }) {
   const prompts = [
     "Show crimes in Bengaluru in 2024",
     "Find cyber crime cases",
@@ -37,6 +37,7 @@ function ChatWindow({ messages, loading }) {
               {prompts.map((prompt) => (
                 <button
                   key={prompt}
+                  onClick={() => onPromptClick(prompt)}
                   className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-left text-sm text-slate-300 transition hover:border-cyan-400/40 hover:bg-cyan-400/10 hover:text-cyan-200"
                 >
                   {prompt}
