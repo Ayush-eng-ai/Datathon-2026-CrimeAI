@@ -11,7 +11,7 @@ function MessageBubble({ type, title, message }) {
         }`}
       >
         {title && <p className="mb-1 text-sm font-bold text-cyan-300">{title}</p>}
-        <p className="leading-7">{message}</p>
+        <p className="whitespace-pre-line leading-7">{message}</p>
       </div>
     </div>
   )
