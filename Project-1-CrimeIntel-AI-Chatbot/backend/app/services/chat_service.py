@@ -1,9 +1,8 @@
-from matplotlib.pylab import extract
-
+from sqlalchemy import or_, extract
 from sqlalchemy.orm import Session
 
 from app.models.ai_models import ChatMessage
-from app.models.police_models import CaseMaster, Unit, District
+from app.models.police_models import CaseMaster, Unit, District, CaseStatusMaster
 from app.schemas.chat_schema import ChatRequest
 
 
@@ -47,21 +46,19 @@ def extract_search_intent(question: str):
 
     if "solved" in text:
         intent["status"] = "Solved"
-
     elif "open" in text:
         intent["status"] = "Open"
-
     elif "investigation" in text:
         intent["status"] = "Under Investigation"
 
     import re
 
     year = re.search(r"\b20\d{2}\b", text)
-
     if year:
         intent["year"] = int(year.group())
 
     return intent
+
 
 def search_cases_from_intent(db: Session, intent: dict):
     query = db.query(CaseMaster)
@@ -74,31 +71,31 @@ def search_cases_from_intent(db: Session, intent: dict):
         query = query.join(District, Unit.district_id == District.district_id)
 
         location_filters = []
+
         for location in intent["location_keywords"]:
             if location == "bangalore":
                 location = "bengaluru"
-            location_filters.append(District.district_name.ilike(f"%{location}%"))
-        
-        from sqlalchemy import extract
 
-        if intent["year"]:
-            query = query.filter(
-                extract("year", CaseMaster.crime_registered_date) == intent["year"]
-            )
-        
-        from app.models.police_models import CaseStatusMaster
-        if intent["status"]:
-            query = query.join(
-                CaseStatusMaster,
-                CaseMaster.case_status_id == CaseStatusMaster.case_status_id
+            location_filters.append(
+                District.district_name.ilike(f"%{location}%")
             )
 
-            query = query.filter(
-                CaseStatusMaster.case_status_name.ilike(f"%{intent['status']}%")
-            )
-
-        from sqlalchemy import or_
         query = query.filter(or_(*location_filters))
+
+    if intent["year"]:
+        query = query.filter(
+            extract("year", CaseMaster.crime_registered_date) == intent["year"]
+        )
+
+    if intent["status"]:
+        query = query.join(
+            CaseStatusMaster,
+            CaseMaster.case_status_id == CaseStatusMaster.case_status_id
+        )
+
+        query = query.filter(
+            CaseStatusMaster.case_status_name.ilike(f"%{intent['status']}%")
+        )
 
     return query.limit(10).all()
 
@@ -112,13 +109,6 @@ def generate_database_answer(db: Session, question: str):
             "No matching crime records found in the current database.\n"
             "Try asking: 'Show theft cases in Bengaluru' or 'Find cyber fraud cases in Mysuru'."
         )
-    
-    lines.append(f"- Status: {intent['status'] or 'Any'}")
-    lines.append(f"- Year: {intent['year'] or 'Any'}")
-
-    lines.append(
-        f"- Location Keywords: ..."
-    )
 
     lines = [
         f"I found {len(results)} matching crime record(s).",
@@ -126,6 +116,8 @@ def generate_database_answer(db: Session, question: str):
         "Search Understanding:",
         f"- Crime Keywords: {', '.join(intent['crime_keywords']) or 'Not specified'}",
         f"- Location Keywords: {', '.join(intent['location_keywords']) or 'Not specified'}",
+        f"- Status: {intent['status'] or 'Any'}",
+        f"- Year: {intent['year'] or 'Any'}",
         "",
         "Matching FIR Records:",
     ]
