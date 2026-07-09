@@ -1,41 +1,97 @@
 from sqlalchemy.orm import Session
 
 from app.models.ai_models import ChatMessage
-from app.models.police_models import CaseMaster
+from app.models.police_models import CaseMaster, Unit, District
 from app.schemas.chat_schema import ChatRequest
 
 
-def search_cases_from_question(db: Session, question: str):
-    question_lower = question.lower()
+def extract_search_intent(question: str):
+    text = question.lower()
 
+    intent = {
+        "crime_keywords": [],
+        "location_keywords": [],
+    }
+
+    crime_words = [
+        "theft",
+        "robbery",
+        "cyber",
+        "fraud",
+        "vehicle theft",
+        "mobile theft",
+        "online fraud",
+        "bank fraud",
+    ]
+
+    location_words = [
+        "bengaluru",
+        "bangalore",
+        "mysuru",
+        "mangaluru",
+        "hubballi",
+        "belagavi",
+    ]
+
+    for word in crime_words:
+        if word in text:
+            intent["crime_keywords"].append(word)
+
+    for word in location_words:
+        if word in text:
+            intent["location_keywords"].append(word)
+
+    return intent
+
+
+def search_cases_from_intent(db: Session, intent: dict):
     query = db.query(CaseMaster)
 
-    if "theft" in question_lower:
-        query = query.filter(CaseMaster.brief_facts.ilike("%theft%"))
+    for keyword in intent["crime_keywords"]:
+        query = query.filter(CaseMaster.brief_facts.ilike(f"%{keyword}%"))
 
-    if "bengaluru" in question_lower or "bangalore" in question_lower:
-        query = query.filter(CaseMaster.brief_facts.ilike("%bengaluru%"))
+    if intent["location_keywords"]:
+        query = query.join(Unit, CaseMaster.police_station_id == Unit.unit_id)
+        query = query.join(District, Unit.district_id == District.district_id)
 
-    if "mobile" in question_lower:
-        query = query.filter(CaseMaster.brief_facts.ilike("%mobile%"))
+        location_filters = []
+        for location in intent["location_keywords"]:
+            if location == "bangalore":
+                location = "bengaluru"
+            location_filters.append(District.district_name.ilike(f"%{location}%"))
 
-    results = query.limit(5).all()
-    return results
+        from sqlalchemy import or_
+        query = query.filter(or_(*location_filters))
+
+    return query.limit(10).all()
 
 
 def generate_database_answer(db: Session, question: str):
-    results = search_cases_from_question(db, question)
+    intent = extract_search_intent(question)
+    results = search_cases_from_intent(db, intent)
 
     if not results:
-        return "No matching crime records found in the current database. Try searching by FIR number, theft, Bengaluru, victim, accused, or case facts."
+        return (
+            "No matching crime records found in the current database.\n"
+            "Try asking: 'Show theft cases in Bengaluru' or 'Find cyber fraud cases in Mysuru'."
+        )
 
     lines = [
-        f"I found {len(results)} matching crime record(s):"
+        f"I found {len(results)} matching crime record(s).",
+        "",
+        "Search Understanding:",
+        f"- Crime Keywords: {', '.join(intent['crime_keywords']) or 'Not specified'}",
+        f"- Location Keywords: {', '.join(intent['location_keywords']) or 'Not specified'}",
+        "",
+        "Matching FIR Records:",
     ]
 
     for case in results:
         lines.append(
-            f"- Crime No: {case.crime_no}, Case No: {case.case_no}, Date: {case.crime_registered_date}, Details: {case.brief_facts}"
+            f"- Crime No: {case.crime_no}\n"
+            f"  Case No: {case.case_no}\n"
+            f"  Date: {case.crime_registered_date}\n"
+            f"  Details: {case.brief_facts}"
         )
 
     return "\n".join(lines)
