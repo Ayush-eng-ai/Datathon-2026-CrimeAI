@@ -12,6 +12,7 @@ from app.routes.report_routes import router as report_router
 from app.routes.dashboard_routes import router as dashboard_router
 from app.routes.analytics_routes import router as analytics_router
 from app.routes.ai_query_routes import router as ai_query_router
+from app.routes.retrieval_routes import router as retrieval_router
 
 
 Base.metadata.create_all(bind=engine)
@@ -40,6 +41,7 @@ app.include_router(report_router)
 app.include_router(dashboard_router)
 app.include_router(analytics_router)
 app.include_router(ai_query_router)
+app.include_router(retrieval_router)
 
 
 @app.get("/")
