@@ -8,20 +8,23 @@ from app.services import chat_service
 
 router = APIRouter(
     prefix="/api/chat",
-    tags=["AI Chatbot"]
+    tags=["AI Chatbot"],
 )
 
 
 @router.post("/")
 def chat_with_ai(
     chat_request: ChatRequest,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
 ):
-    chat_message = chat_service.create_chat_message(db, chat_request)
+    result = chat_service.create_chat_message(
+        db=db,
+        chat_request=chat_request,
+    )
 
     return {
-        "message": "AI response generated successfully",
-        "data": chat_message
+        "message": "Grounded AI response generated successfully",
+        "data": result,
     }
 
 
@@ -31,7 +34,7 @@ def get_chat_history(db: Session = Depends(get_db)):
 
     return {
         "total_messages": len(history),
-        "data": history
+        "data": history,
     }
 
 
@@ -41,5 +44,5 @@ def clear_chat_history(db: Session = Depends(get_db)):
 
     return {
         "message": "Chat history cleared successfully",
-        "deleted_messages": deleted_count
+        "deleted_messages": deleted_count,
     }

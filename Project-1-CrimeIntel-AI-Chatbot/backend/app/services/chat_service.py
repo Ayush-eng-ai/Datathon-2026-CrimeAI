@@ -12,12 +12,6 @@ def create_chat_message(
     db: Session,
     chat_request: ChatRequest,
 ):
-    """
-    Understand the officer's natural-language query,
-    retrieve matching FIR evidence from PostgreSQL,
-    generate a grounded answer, and save the conversation.
-    """
-
     retrieval_result = retrieve_matching_cases(
         db=db,
         query_text=chat_request.question,
@@ -39,7 +33,16 @@ def create_chat_message(
     db.commit()
     db.refresh(chat_message)
 
-    return chat_message
+    return {
+        "message_id": chat_message.message_id,
+        "question": chat_message.question,
+        "answer": chat_message.answer,
+        "language": chat_message.language,
+        "created_at": chat_message.created_at,
+        "intent": retrieval_result["intent"],
+        "total_matches": retrieval_result["total_matches"],
+        "sources": retrieval_result["evidence"],
+    }
 
 
 def get_chat_history(db: Session):
