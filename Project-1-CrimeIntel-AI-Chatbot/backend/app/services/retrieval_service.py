@@ -20,6 +20,7 @@ def calculate_relevance_score(
     case: CaseMaster,
     intent: dict[str, Any],
     district_name: str | None,
+    police_station_name: str | None,
     crime_head_name: str | None,
     crime_sub_head_name: str | None,
     status_name: str | None,
@@ -49,9 +50,18 @@ def calculate_relevance_score(
     if intent["locations"]:
         total_signals += 1
 
-        normalized_district = (district_name or "").lower()
+        location_text = " ".join(
+            [
+                district_name or "",
+                police_station_name or "",
+                case.brief_facts or "",
+            ]
+        ).lower()
 
-        if any(location in normalized_district for location in intent["locations"]):
+        if any(
+            location in location_text
+            for location in intent["locations"]
+        ):
             matched_signals += 1
 
     if intent["status"]:
@@ -142,13 +152,20 @@ def retrieve_matching_cases(
         query = query.filter(or_(*crime_filters))
 
     if intent["locations"]:
-        location_filters = [
-            District.district_name.ilike(f"%{location}%")
-            for location in intent["locations"]
-        ]
+        location_filters = []
+
+        for location in intent["locations"]:
+            pattern = f"%{location}%"
+
+            location_filters.extend(
+                [
+                    District.district_name.ilike(pattern),
+                    Unit.unit_name.ilike(pattern),
+                    CaseMaster.brief_facts.ilike(pattern),
+                ]
+            )
 
         query = query.filter(or_(*location_filters))
-
     if intent["status"]:
         query = query.filter(
             CaseStatusMaster.case_status_name.ilike(
@@ -186,11 +203,11 @@ def retrieve_matching_cases(
             case=case,
             intent=intent,
             district_name=row.district_name,
+            police_station_name=row.police_station_name,
             crime_head_name=row.crime_head_name,
             crime_sub_head_name=row.crime_sub_head_name,
             status_name=row.status_name,
         )
-
         evidence.append(
             {
                 "case_master_id": case.case_master_id,
