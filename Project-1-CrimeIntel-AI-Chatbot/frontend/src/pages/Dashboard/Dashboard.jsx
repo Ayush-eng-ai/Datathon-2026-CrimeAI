@@ -23,6 +23,7 @@ import {
   getCrimeByType,
   getMonthlyTrend,
 } from "../../services/analyticsService"
+import CrimeMap from "../../components/map/CrimeMap"
 
 const pieColors = ["#22d3ee", "#3b82f6", "#8b5cf6", "#10b981", "#f59e0b"]
 
@@ -348,6 +349,24 @@ function Dashboard() {
               live PostgreSQL aggregation results.
             </p>
           </div>
+        </GlassCard>
+        <GlassCard>
+          <div className="mb-6">
+            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-cyan-300">
+              Geospatial Intelligence
+            </p>
+
+            <h3 className="mt-2 text-2xl font-bold text-white">
+              Karnataka Crime Intelligence Map
+            </h3>
+
+            <p className="mt-2 text-sm leading-6 text-slate-400">
+              Explore live FIR locations, crime types, investigation
+              status and risk levels using PostgreSQL coordinates.
+            </p>
+          </div>
+
+          <CrimeMap />
         </GlassCard>
       </div>
     </div>
