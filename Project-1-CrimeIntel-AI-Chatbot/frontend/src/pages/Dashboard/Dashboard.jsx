@@ -350,7 +350,9 @@ function Dashboard() {
             </p>
           </div>
         </GlassCard>
-        <GlassCard>
+        
+      </div>
+      <GlassCard>
           <div className="mb-6">
             <p className="text-xs font-semibold uppercase tracking-[0.2em] text-cyan-300">
               Geospatial Intelligence
@@ -368,7 +370,6 @@ function Dashboard() {
 
           <CrimeMap />
         </GlassCard>
-      </div>
     </div>
   )
 }
