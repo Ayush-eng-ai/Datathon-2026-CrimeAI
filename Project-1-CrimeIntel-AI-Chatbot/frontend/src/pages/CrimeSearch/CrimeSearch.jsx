@@ -3,6 +3,8 @@ import PageHeader from "../../components/ui/PageHeader"
 import GlassCard from "../../components/ui/GlassCard"
 import PrimaryButton from "../../components/ui/PrimaryButton"
 import { searchCrimes } from "../../services/searchService"
+import TimelineModal from "../../components/timeline/TimelineModal"
+import { getCaseTimeline } from "../../services/timelineService"
 
 function CrimeSearch() {
   const [filters, setFilters] = useState({
@@ -16,6 +18,13 @@ function CrimeSearch() {
   const [records, setRecords] = useState([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState("")
+  const [timelineOpen, setTimelineOpen] = useState(false)
+
+  const [timelineLoading, setTimelineLoading] = useState(false)
+
+  const [timelineError, setTimelineError] = useState("")
+
+  const [timeline, setTimeline] = useState(null)
 
   const updateFilter = (key, value) => {
     setFilters((prev) => ({
@@ -32,6 +41,27 @@ function CrimeSearch() {
       const cleanFilters = Object.fromEntries(
         Object.entries(filters).filter(([, value]) => value.trim() !== "")
       )
+
+      const openTimeline = async (caseId) => {
+        try {
+          setTimelineOpen(true)
+          setTimelineLoading(true)
+          setTimelineError("")
+          setTimeline(null)
+
+          const data = await getCaseTimeline(caseId)
+
+          setTimeline(data)
+        } catch (err) {
+          console.error(err)
+
+          setTimelineError(
+            "Timeline load nahi ho pa rahi."
+          )
+        } finally {
+          setTimelineLoading(false)
+        }
+      }
 
       const result = await searchCrimes(cleanFilters)
       setRecords(result.data || [])
@@ -131,7 +161,11 @@ function CrimeSearch() {
                 <th className="px-4 py-4">Police Station ID</th>
                 <th className="px-4 py-4">Status ID</th>
                 <th className="px-4 py-4">Brief Facts</th>
+                <th className="px-4 py-4">
+                  Action
+                </th>
               </tr>
+
             </thead>
 
             <tbody className="divide-y divide-white/10">
@@ -145,12 +179,22 @@ function CrimeSearch() {
                   <td className="max-w-md px-4 py-4 text-slate-400">
                     {record.brief_facts || "No details available"}
                   </td>
+                  <td className="px-4 py-4">
+                    <button
+                      onClick={() =>
+                        openTimeline(record.case_master_id)
+                      }
+                      className="rounded-xl bg-cyan-500 px-4 py-2 text-sm font-semibold text-slate-950 transition hover:bg-cyan-400"
+                    >
+                      View Timeline
+                    </button>
+                  </td>
                 </tr>
               ))}
 
               {!loading && records.length === 0 && (
                 <tr>
-                  <td colSpan="6" className="px-4 py-8 text-center text-slate-400">
+                  <td colSpan="7" className="px-4 py-8 text-center text-slate-400">
                     No crime records found.
                   </td>
                 </tr>
@@ -159,8 +203,17 @@ function CrimeSearch() {
           </table>
         </div>
       </GlassCard>
+
+      <TimelineModal
+        isOpen={timelineOpen}
+        onClose={() => setTimelineOpen(false)}
+        timeline={timeline}
+        loading={timelineLoading}
+        error={timelineError}
+      />
     </div>
   )
 }
 
 export default CrimeSearch
+
