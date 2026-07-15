@@ -15,6 +15,7 @@ from app.routes.ai_query_routes import router as ai_query_router
 from app.routes.retrieval_routes import router as retrieval_router
 from app.routes.map_routes import router as map_router
 from app.routes.timeline_routes import router as timeline_router
+from app.routes.recommendation_routes import router as recommendation_router
 
 
 Base.metadata.create_all(bind=engine)
@@ -46,6 +47,7 @@ app.include_router(ai_query_router)
 app.include_router(retrieval_router)
 app.include_router(map_router)
 app.include_router(timeline_router)
+app.include_router(recommendation_router)
 
 
 @app.get("/")

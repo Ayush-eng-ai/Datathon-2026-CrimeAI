@@ -1,4 +1,5 @@
 import TimelineItem from "./TimelineItem"
+import SimilarCaseCard from "./SimilarCaseCard"
 
 function TimelineModal({
   isOpen,
@@ -6,6 +7,10 @@ function TimelineModal({
   timeline,
   loading,
   error,
+  recommendations = [],
+  recommendationsLoading = false,
+  recommendationsError = "",
+  onOpenSimilarCase,
 }) {
   if (!isOpen) return null
 
@@ -133,6 +138,63 @@ function TimelineModal({
 
             <div className="mt-6 rounded-2xl border border-cyan-400/20 bg-cyan-400/[0.06] p-4 text-xs leading-5 text-cyan-200">
               Timeline Source: {timeline.timeline_source}
+            </div>
+
+            <div className="mt-8">
+              <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-[0.2em] text-cyan-300">
+                    AI Historical Intelligence
+                  </p>
+
+                  <h3 className="mt-2 text-xl font-bold text-white">
+                    Similar Case Recommendations
+                  </h3>
+
+                  <p className="mt-2 text-sm text-slate-400">
+                    Weighted matching based on crime type, district,
+                    investigation status and narrative keywords.
+                  </p>
+                </div>
+
+                <span className="rounded-full border border-white/10 bg-slate-950/70 px-3 py-1 text-xs text-slate-400">
+                  {recommendations.length} recommendation(s)
+                </span>
+              </div>
+
+              {recommendationsLoading && (
+                <div className="rounded-2xl border border-cyan-400/20 bg-cyan-400/10 p-5 text-cyan-200">
+                  Comparing this FIR with historical cases...
+                </div>
+              )}
+
+              {recommendationsError && (
+                <div className="rounded-2xl border border-red-400/20 bg-red-400/10 p-5 text-red-300">
+                  {recommendationsError}
+                </div>
+              )}
+
+              {!recommendationsLoading &&
+                !recommendationsError &&
+                recommendations.length > 0 && (
+                  <div className="grid gap-4 xl:grid-cols-2">
+                    {recommendations.map((item) => (
+                      <SimilarCaseCard
+                        key={item.case_master_id}
+                        item={item}
+                        onOpenTimeline={onOpenSimilarCase}
+                      />
+                    ))}
+                  </div>
+                )}
+
+              {!recommendationsLoading &&
+                !recommendationsError &&
+                recommendations.length === 0 && (
+                  <div className="rounded-2xl border border-white/10 bg-slate-950/70 p-6 text-center text-slate-400">
+                    No similar historical cases found.
+                  </div>
+                )}
             </div>
           </>
         )}

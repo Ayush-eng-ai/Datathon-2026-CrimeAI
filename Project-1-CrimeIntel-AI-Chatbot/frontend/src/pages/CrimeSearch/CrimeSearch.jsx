@@ -5,6 +5,7 @@ import PrimaryButton from "../../components/ui/PrimaryButton"
 import { searchCrimes } from "../../services/searchService"
 import TimelineModal from "../../components/timeline/TimelineModal"
 import { getCaseTimeline } from "../../services/timelineService"
+import { getSimilarCases } from "../../services/recommendationService"
 
 function CrimeSearch() {
   const [filters, setFilters] = useState({
@@ -25,6 +26,9 @@ function CrimeSearch() {
   const [timelineError, setTimelineError] = useState("")
 
   const [timeline, setTimeline] = useState(null)
+  const [recommendations, setRecommendations] = useState([])
+  const [recommendationsLoading, setRecommendationsLoading] = useState(false)
+  const [recommendationsError, setRecommendationsError] = useState("")
 
   const updateFilter = (key, value) => {
     setFilters((prev) => ({
@@ -46,20 +50,36 @@ function CrimeSearch() {
         try {
           setTimelineOpen(true)
           setTimelineLoading(true)
+          setRecommendationsLoading(true)
+
           setTimelineError("")
+          setRecommendationsError("")
           setTimeline(null)
+          setRecommendations([])
 
-          const data = await getCaseTimeline(caseId)
+          const [timelineData, recommendationData] =
+            await Promise.all([
+              getCaseTimeline(caseId),
+              getSimilarCases(caseId),
+            ])
 
-          setTimeline(data)
+          setTimeline(timelineData)
+          setRecommendations(
+            recommendationData.recommendations || []
+          )
         } catch (err) {
           console.error(err)
 
           setTimelineError(
-            "Timeline load nahi ho pa rahi."
+            "Timeline ya similar-case intelligence load nahi ho pa rahi."
+          )
+
+          setRecommendationsError(
+            "Similar case recommendations load nahi ho pa rahi."
           )
         } finally {
           setTimelineLoading(false)
+          setRecommendationsLoading(false)
         }
       }
 
@@ -210,6 +230,10 @@ function CrimeSearch() {
         timeline={timeline}
         loading={timelineLoading}
         error={timelineError}
+        recommendations={recommendations}
+        recommendationsLoading={recommendationsLoading}
+        recommendationsError={recommendationsError}
+        onOpenSimilarCase={openTimeline}
       />
     </div>
   )
