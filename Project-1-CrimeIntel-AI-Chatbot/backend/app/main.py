@@ -18,6 +18,8 @@ from app.routes.timeline_routes import router as timeline_router
 from app.routes.recommendation_routes import router as recommendation_router
 
 
+from app.routes.investigation_routes import router as investigation_router
+
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI(
@@ -48,6 +50,8 @@ app.include_router(retrieval_router)
 app.include_router(map_router)
 app.include_router(timeline_router)
 app.include_router(recommendation_router)
+app.include_router(investigation_router)
+from app.routes.investigation_routes import router as investigation_router
 
 
 @app.get("/")

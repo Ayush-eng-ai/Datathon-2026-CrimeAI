@@ -1,5 +1,6 @@
 import TimelineItem from "./TimelineItem"
 import SimilarCaseCard from "./SimilarCaseCard"
+import InvestigationAssistantPanel from "./InvestigationAssistantPanel"
 
 function TimelineModal({
   isOpen,
@@ -11,6 +12,9 @@ function TimelineModal({
   recommendationsLoading = false,
   recommendationsError = "",
   onOpenSimilarCase,
+  investigationData,
+  investigationLoading = false,
+  investigationError = "",
 }) {
   if (!isOpen) return null
 
@@ -195,6 +199,27 @@ function TimelineModal({
                     No similar historical cases found.
                   </div>
                 )}
+            </div>
+            <div className="mt-8">
+              <div className="mb-5">
+                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-cyan-300">
+                  AI Decision Support
+                </p>
+
+                <h3 className="mt-2 text-xl font-bold text-white">
+                  Investigation Assistant
+                </h3>
+
+                <p className="mt-2 text-sm text-slate-400">
+                  Evidence checklist, suggested investigation actions and rule-based risk alerts.
+                </p>
+              </div>
+
+              <InvestigationAssistantPanel
+                data={investigationData}
+                loading={investigationLoading}
+                error={investigationError}
+              />
             </div>
           </>
         )}

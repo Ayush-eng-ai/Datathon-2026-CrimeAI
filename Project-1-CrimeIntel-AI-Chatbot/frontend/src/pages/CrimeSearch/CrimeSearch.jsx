@@ -6,6 +6,7 @@ import { searchCrimes } from "../../services/searchService"
 import TimelineModal from "../../components/timeline/TimelineModal"
 import { getCaseTimeline } from "../../services/timelineService"
 import { getSimilarCases } from "../../services/recommendationService"
+import { getInvestigationAssistance } from "../../services/investigationService"
 
 function CrimeSearch() {
   const [filters, setFilters] = useState({
@@ -29,6 +30,9 @@ function CrimeSearch() {
   const [recommendations, setRecommendations] = useState([])
   const [recommendationsLoading, setRecommendationsLoading] = useState(false)
   const [recommendationsError, setRecommendationsError] = useState("")
+  const [investigationData, setInvestigationData] = useState(null)
+  const [investigationLoading, setInvestigationLoading] = useState(false)
+  const [investigationError, setInvestigationError] = useState("")
 
   const updateFilter = (key, value) => {
     setFilters((prev) => ({
@@ -51,38 +55,51 @@ function CrimeSearch() {
           setTimelineOpen(true)
           setTimelineLoading(true)
           setRecommendationsLoading(true)
+          setInvestigationLoading(true)
 
           setTimelineError("")
           setRecommendationsError("")
+          setInvestigationError("")
+
           setTimeline(null)
           setRecommendations([])
+          setInvestigationData(null)
 
-          const [timelineData, recommendationData] =
-            await Promise.all([
-              getCaseTimeline(caseId),
-              getSimilarCases(caseId),
-            ])
+          const [
+            timelineData,
+            recommendationData,
+            investigationResponse,
+          ] = await Promise.all([
+            getCaseTimeline(caseId),
+            getSimilarCases(caseId),
+            getInvestigationAssistance(caseId),
+          ])
 
           setTimeline(timelineData)
           setRecommendations(
             recommendationData.recommendations || []
           )
+          setInvestigationData(investigationResponse)
         } catch (err) {
           console.error(err)
 
           setTimelineError(
-            "Timeline ya similar-case intelligence load nahi ho pa rahi."
+            "Timeline load nahi ho pa rahi."
           )
 
           setRecommendationsError(
             "Similar case recommendations load nahi ho pa rahi."
           )
+
+          setInvestigationError(
+            "Investigation assistant load nahi ho pa raha."
+          )
         } finally {
           setTimelineLoading(false)
           setRecommendationsLoading(false)
+          setInvestigationLoading(false)
         }
       }
-
       const result = await searchCrimes(cleanFilters)
       setRecords(result.data || [])
     } catch (err) {
@@ -234,6 +251,9 @@ function CrimeSearch() {
         recommendationsLoading={recommendationsLoading}
         recommendationsError={recommendationsError}
         onOpenSimilarCase={openTimeline}
+        investigationData={investigationData}
+        investigationLoading={investigationLoading}
+        investigationError={investigationError}
       />
     </div>
   )
