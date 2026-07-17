@@ -63,6 +63,7 @@ def get_monthly_trend(db: Session):
             extract("month", CaseMaster.crime_registered_date).label("month"),
             func.count(CaseMaster.case_master_id).label("total_cases"),
         )
+        .filter(CaseMaster.crime_registered_date.isnot(None))
         .group_by(
             extract("year", CaseMaster.crime_registered_date),
             extract("month", CaseMaster.crime_registered_date),
