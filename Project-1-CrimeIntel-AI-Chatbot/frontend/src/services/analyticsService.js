@@ -1,5 +1,10 @@
 import api from "./api"
 
+export const getDashboardSummary = async () => {
+  const response = await api.get("/api/analytics/dashboard-summary")
+  return response.data
+}
+
 export const getCrimeByDistrict = async () => {
   const response = await api.get("/api/analytics/crime-by-district")
   return response.data
@@ -17,10 +22,5 @@ export const getMonthlyTrend = async () => {
 
 export const getCaseStatusAnalytics = async () => {
   const response = await api.get("/api/analytics/case-status")
-  return response.data
-}
-
-export const getAnalyticsSummary = async () => {
-  const response = await api.get("/api/analytics/dashboard-summary")
   return response.data
 }
