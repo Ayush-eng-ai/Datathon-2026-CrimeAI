@@ -19,6 +19,7 @@ from app.routes.recommendation_routes import router as recommendation_router
 
 
 from app.routes.investigation_routes import router as investigation_router
+from app.routes.gemini_routes import router as gemini_router
 
 Base.metadata.create_all(bind=engine)
 
@@ -51,8 +52,9 @@ app.include_router(map_router)
 app.include_router(timeline_router)
 app.include_router(recommendation_router)
 app.include_router(investigation_router)
-from app.routes.investigation_routes import router as investigation_router
+app.include_router(gemini_router)
 
+from app.routes.investigation_routes import router as investigation_router
 
 @app.get("/")
 def root():
