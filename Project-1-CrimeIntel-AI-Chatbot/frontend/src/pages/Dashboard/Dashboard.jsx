@@ -108,22 +108,34 @@ function Dashboard() {
     {
       label: "Total Cases",
       value: summary.total_cases,
-      description: "All FIR records",
+      description: "All FIR Records",
+      icon: "📂",
+      color: "from-cyan-500 to-blue-600",
+      trend: "+12%",
     },
     {
       label: "Solved Cases",
       value: summary.solved_cases,
-      description: "Successfully resolved",
+      description: "Successfully Resolved",
+      icon: "✅",
+      color: "from-emerald-500 to-green-600",
+      trend: "+8%",
     },
     {
       label: "Open Cases",
       value: summary.open_cases,
-      description: "Pending investigation",
+      description: "Pending Investigation",
+      icon: "🚨",
+      color: "from-orange-500 to-red-500",
+      trend: "-2%",
     },
     {
       label: "Under Investigation",
       value: summary.under_investigation,
-      description: "Currently active",
+      description: "Active Investigation",
+      icon: "🕵️",
+      color: "from-violet-500 to-purple-600",
+      trend: "+5%",
     },
   ]
 
@@ -163,19 +175,43 @@ function Dashboard() {
         {cards.map((card) => (
           <div
             key={card.label}
-            className="rounded-2xl border border-white/10 bg-slate-950/70 p-5"
+            className={`rounded-3xl bg-gradient-to-br ${card.color} p-[1px] shadow-xl`}
           >
-            <p className="text-sm text-slate-400">
-              {card.label}
-            </p>
+            <div className="rounded-3xl bg-slate-950/90 p-6 backdrop-blur-xl">
 
-            <p className="mt-3 text-3xl font-bold text-white">
-              {card.value}
-            </p>
+              <div className="flex items-center justify-between">
 
-            <p className="mt-2 text-xs text-slate-500">
-              {card.description}
-            </p>
+                <div>
+
+                  <p className="text-sm text-slate-400">
+                    {card.label}
+                  </p>
+
+                  <h2 className="mt-3 text-4xl font-bold text-white">
+                    {card.value}
+                  </h2>
+
+                </div>
+
+                <div className="text-5xl">
+                  {card.icon}
+                </div>
+
+              </div>
+
+              <div className="mt-6 flex items-center justify-between">
+
+                <p className="text-sm text-slate-400">
+                  {card.description}
+                </p>
+
+                <span className="rounded-full bg-emerald-500/20 px-3 py-1 text-xs font-bold text-emerald-400">
+                  {card.trend}
+                </span>
+
+              </div>
+
+            </div>
           </div>
         ))}
       </div>
