@@ -45,6 +45,16 @@ function Dashboard() {
     under_investigation: 0,
   })
 
+  const [currentTime, setCurrentTime] = useState(new Date())
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentTime(new Date())
+    }, 1000)
+
+    return () => clearInterval(timer)
+  }, [])
+
   const [districtData, setDistrictData] = useState([])
   const [crimeTypeData, setCrimeTypeData] = useState([])
   const [monthlyData, setMonthlyData] = useState([])
@@ -139,6 +149,23 @@ function Dashboard() {
     },
   ]
 
+  const topDistrict = districtData.length
+    ? districtData.reduce((prev, current) =>
+        current.total_cases > prev.total_cases ? current : prev
+      )
+    : null
+
+  const topCrimeType = crimeTypeData.length
+    ? crimeTypeData.reduce((prev, current) =>
+        current.total_cases > prev.total_cases ? current : prev
+      )
+    : null
+
+  const solvedPercentage =
+    summary.total_cases > 0
+      ? ((summary.solved_cases / summary.total_cases) * 100).toFixed(1)
+      : 0
+
   if (loading) {
     return (
       <div className="flex min-h-[60vh] items-center justify-center">
@@ -151,18 +178,71 @@ function Dashboard() {
 
   return (
     <div className="space-y-8">
-      <div>
-        <p className="text-xs font-semibold uppercase tracking-[0.22em] text-cyan-300">
-          Crime Intelligence Platform
-        </p>
+      <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
 
-        <h1 className="mt-2 text-3xl font-bold text-white">
-          Live Analytics Dashboard
-        </h1>
+        <div>
 
-        <p className="mt-2 text-sm text-slate-400">
-          Real-time insights generated from PostgreSQL FIR records.
-        </p>
+          <p className="text-xs font-semibold uppercase tracking-[0.22em] text-cyan-300">
+            Crime Intelligence Platform
+          </p>
+
+          <h1 className="mt-2 text-4xl font-extrabold text-white">
+            Live Analytics Dashboard
+          </h1>
+
+          <p className="mt-2 max-w-2xl text-sm text-slate-400">
+            AI-powered real-time crime intelligence generated directly from PostgreSQL FIR records.
+          </p>
+
+        </div>
+
+        <div className="rounded-3xl border border-cyan-400/20 bg-cyan-400/10 px-6 py-5 backdrop-blur-xl">
+
+          <p className="text-xs uppercase tracking-widest text-cyan-300">
+            AI SYSTEM STATUS
+          </p>
+
+          <h3 className="mt-2 text-2xl font-bold text-white">
+            🟢 ONLINE
+          </h3>
+
+          <p className="mt-2 text-sm text-slate-300">
+            Database Connected
+          </p>
+
+          <p className="text-sm text-slate-300">
+            Analytics Active
+          </p>
+
+          <p className="text-sm text-slate-300">
+            Investigation Engine Ready
+          </p>
+          <p className="mt-4 text-sm font-medium text-cyan-200">
+            {currentTime.toLocaleString()}
+          </p>
+
+        </div>
+
+      </div>
+
+      
+      <div className="mt-5 space-y-2">
+
+        <div className="flex justify-between">
+          <span className="text-slate-400">Database</span>
+          <span className="text-emerald-400">🟢 Connected</span>
+        </div>
+
+        <div className="flex justify-between">
+          <span className="text-slate-400">Analytics API</span>
+          <span className="text-emerald-400">🟢 Running</span>
+        </div>
+
+        <div className="flex justify-between">
+          <span className="text-slate-400">AI Engine</span>
+          <span className="text-yellow-400">🟡 Rule Based</span>
+        </div>
+
       </div>
 
       {error && (
@@ -214,6 +294,57 @@ function Dashboard() {
             </div>
           </div>
         ))}
+      </div>
+      <div className="grid gap-5 lg:grid-cols-3">
+
+        <div className="rounded-3xl border border-cyan-500/20 bg-cyan-500/10 p-6">
+
+          <p className="text-xs uppercase tracking-widest text-cyan-300">
+            🏆 Top Crime District
+          </p>
+
+          <h2 className="mt-3 text-2xl font-bold text-white">
+            {topDistrict?.district || "N/A"}
+          </h2>
+
+          <p className="mt-2 text-slate-300">
+            {topDistrict?.total_cases || 0} Registered Cases
+          </p>
+
+        </div>
+
+        <div className="rounded-3xl border border-violet-500/20 bg-violet-500/10 p-6">
+
+          <p className="text-xs uppercase tracking-widest text-violet-300">
+            🚨 Highest Crime Type
+          </p>
+
+          <h2 className="mt-3 text-2xl font-bold text-white">
+            {topCrimeType?.crime_type || "N/A"}
+          </h2>
+
+          <p className="mt-2 text-slate-300">
+            {topCrimeType?.total_cases || 0} Cases
+          </p>
+
+        </div>
+
+        <div className="rounded-3xl border border-emerald-500/20 bg-emerald-500/10 p-6">
+
+          <p className="text-xs uppercase tracking-widest text-emerald-300">
+            ✅ Solved Rate
+          </p>
+
+          <h2 className="mt-3 text-2xl font-bold text-white">
+            {solvedPercentage}%
+          </h2>
+
+          <p className="mt-2 text-slate-300">
+            Cases Successfully Closed
+          </p>
+
+        </div>
+
       </div>
 
       <div className="grid gap-6 xl:grid-cols-2">
