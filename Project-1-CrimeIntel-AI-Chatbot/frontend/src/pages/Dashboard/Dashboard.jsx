@@ -347,6 +347,61 @@ function Dashboard() {
 
       </div>
 
+      <GlassCard>
+
+        <div className="flex items-center justify-between">
+
+          <div>
+
+            <p className="text-xs uppercase tracking-widest text-cyan-300">
+              Recent Crime Activity
+            </p>
+
+            <h2 className="mt-2 text-2xl font-bold text-white">
+              Latest FIR Records
+            </h2>
+
+          </div>
+
+          <span className="rounded-full bg-cyan-500/20 px-4 py-2 text-sm text-cyan-300">
+            LIVE
+          </span>
+
+        </div>
+
+        <div className="mt-6 space-y-4">
+
+          {districtData.slice(0, 5).map((item, index) => (
+
+            <div
+              key={index}
+              className="flex items-center justify-between rounded-2xl border border-white/10 bg-slate-900/60 p-4"
+            >
+
+              <div>
+
+                <h3 className="font-semibold text-white">
+                  📍 {item.district}
+                </h3>
+
+                <p className="text-sm text-slate-400">
+                  {item.total_cases} Registered Cases
+                </p>
+
+              </div>
+
+              <span className="rounded-full bg-red-500/20 px-3 py-1 text-xs font-bold text-red-300">
+                ACTIVE
+              </span>
+
+            </div>
+
+          ))}
+
+        </div>
+
+      </GlassCard>
+
       <div className="grid gap-6 xl:grid-cols-2">
         <ChartCard
           title="Monthly Crime Trend"
