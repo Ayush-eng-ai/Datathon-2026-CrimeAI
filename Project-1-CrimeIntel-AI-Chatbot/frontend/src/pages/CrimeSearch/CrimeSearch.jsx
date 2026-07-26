@@ -50,7 +50,17 @@ function CrimeSearch() {
         Object.entries(filters).filter(([, value]) => value.trim() !== "")
       )
 
-      const openTimeline = async (caseId) => {
+      
+      const result = await searchCrimes(cleanFilters)
+      setRecords(result.data || [])
+    } catch (err) {
+      setError("Backend se crime records load nahi ho pa rahe. FastAPI server check karo.")
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const openTimeline = async (caseId) => {
         try {
           setTimelineOpen(true)
           setTimelineLoading(true)
@@ -100,14 +110,6 @@ function CrimeSearch() {
           setInvestigationLoading(false)
         }
       }
-      const result = await searchCrimes(cleanFilters)
-      setRecords(result.data || [])
-    } catch (err) {
-      setError("Backend se crime records load nahi ho pa rahe. FastAPI server check karo.")
-    } finally {
-      setLoading(false)
-    }
-  }
 
   useEffect(() => {
     fetchRecords()

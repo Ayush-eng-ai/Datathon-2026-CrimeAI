@@ -1,6 +1,3 @@
-
-
-
 import { useEffect, useState } from "react"
 import {
   Bar,
@@ -347,8 +344,7 @@ function Dashboard() {
 
       </div>
 
-      <GlassCard>
-
+      <div className="rounded-3xl border border-white/10 bg-slate-950/70 p-6 backdrop-blur-xl">
         <div className="flex items-center justify-between">
 
           <div>
@@ -400,7 +396,7 @@ function Dashboard() {
 
         </div>
 
-      </GlassCard>
+      </div>
 
       <div className="grid gap-6 xl:grid-cols-2">
         <ChartCard
